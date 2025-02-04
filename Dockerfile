@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rsync \
     wine64 \
     osslsigncode \
+    build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GODOT_VERSION="4.3"
@@ -31,6 +33,12 @@ ARG SUBDIR=""
 ARG GODOT_TEST_ARGS=""
 ARG GODOT_PLATFORM="linux.x86_64"
 
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Get Godot
 RUN wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}${SUBDIR}-${RELEASE_NAME}/Godot_v${GODOT_VERSION}-${RELEASE_NAME}_${GODOT_PLATFORM}.zip \
     && wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}${SUBDIR}-${RELEASE_NAME}/Godot_v${GODOT_VERSION}-${RELEASE_NAME}_export_templates.tpz \
     && mkdir ~/.cache \
