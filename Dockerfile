@@ -59,7 +59,7 @@ RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922
 ENV PATH="${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${PATH}"
 
 RUN yes | sdkmanager --licenses \
-    && sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33" "cmdline-tools;latest" "cmake;3.22.1" "ndk;25.2.9519653"
+    && sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34" "cmdline-tools;latest" "cmake;3.10.2.4988404" "ndk;23.2.8568313"
 
 # Add Android keystore and settings.
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
