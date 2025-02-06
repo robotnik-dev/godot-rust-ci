@@ -82,7 +82,9 @@ RUN echo 'export/windows/wine = "/usr/bin/wine64-stable"' >> ~/.config/godot/edi
 # Get Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-ENV PATH="${HOME}/.cargo/bin:${PATH}"
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN rustup default stable
 
 # Get Butler
 RUN mkdir -p /opt/butler/bin \
