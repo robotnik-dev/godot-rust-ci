@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     osslsigncode \
     build-essential \
     curl \
+    mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GODOT_VERSION="4.3"
