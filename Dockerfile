@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-17-jdk-headless \
     rsync \
     osslsigncode \
+    build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GODOT_VERSION="4.3"
@@ -41,12 +43,6 @@ RUN wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}
     && unzip Godot_v${GODOT_VERSION}-${RELEASE_NAME}_export_templates.tpz \
     && mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE_NAME} \
     && rm -f Godot_v${GODOT_VERSION}-${RELEASE_NAME}_export_templates.tpz Godot_v${GODOT_VERSION}-${RELEASE_NAME}_${GODOT_PLATFORM}.zip
-
-ADD getbutler.sh /opt/butler/getbutler.sh
-RUN bash /opt/butler/getbutler.sh
-RUN /opt/butler/bin/butler -V
-
-ENV PATH="/opt/butler/bin:${PATH}"
 
 # Download and set up Android SDK to export to Android.
 ENV ANDROID_HOME="/usr/lib/android-sdk"
@@ -82,3 +78,19 @@ RUN echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_
 RUN wget https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe -O /opt/rcedit.exe
 RUN echo 'export/windows/rcedit = "/opt/rcedit.exe"' >> ~/.config/godot/editor_settings-${GODOT_VERSION:0:3}.tres
 RUN echo 'export/windows/wine = "/usr/bin/wine64-stable"' >> ~/.config/godot/editor_settings-${GODOT_VERSION:0:3}.tres
+
+# Get Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+ENV PATH="${HOME}/.cargo/bin:${PATH}"
+
+# Get Butler
+RUN mkdir -p /opt/butler/bin \
+    && cd /opt/butler/bin \
+    && wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default \
+    && unzip butler.zip \
+    && chmod +x butler \
+    && cd ~ \
+    && /opt/butler/bin/butler -V
+
+ENV PATH="/opt/butler/bin:${PATH}"
