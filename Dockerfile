@@ -13,8 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     adb \
     openjdk-17-jdk-headless \
     rsync \
-    wine64 \
+    mingw-w64 \
+    wine \
+    wine-binfmt \
     osslsigncode \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GODOT_VERSION="4.3"
@@ -30,6 +33,16 @@ ARG SUBDIR=""
 
 ARG GODOT_TEST_ARGS=""
 ARG GODOT_PLATFORM="linux.x86_64"
+
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | \
+    sh -s -- --default-toolchain stable -y && \
+    /root/.cargo/bin/rustup update beta && \
+    /root/.cargo/bin/rustup update nightly
+
+ENV PATH=/root/.cargo/bin:$PATH
+
+RUN rustup target add x86_64-pc-windows-gnu x86_64-unknown-linux-gnu x86_64-apple-darwin
 
 # Get Godot
 RUN wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}${SUBDIR}-${RELEASE_NAME}/Godot_v${GODOT_VERSION}-${RELEASE_NAME}_${GODOT_PLATFORM}.zip \
