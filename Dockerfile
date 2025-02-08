@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     mingw-w64 \
     wine \
+    wine-binfmt \
+    libwine \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GODOT_VERSION="4.3"
@@ -96,3 +98,20 @@ RUN mkdir -p /opt/butler/bin \
     && /opt/butler/bin/butler -V
 
 ENV PATH="/opt/butler/bin:${PATH}"
+
+# Needed for web export
+RUN apt-get update \
+    && apt-get install python3.10 -y \
+    && apt-get install python-is-python3 -y \
+    && git clone https://github.com/emscripten-core/emsdk.git \
+    && cd emsdk \
+    && ./emsdk install 3.1.39 \
+    && ./emsdk activate 3.1.39
+
+# source the emsdk file
+ENTRYPOINT ["sh", "-c", "source /emsdk.sh && \"$@\"", "-s"]
+
+# wine32 bug for windows builds
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install wine32 -y
